@@ -1,3 +1,8 @@
+# Installation
+
+```bash
+go get github.com/Ayman161803/inmemocache
+```
 # Usage
 
 ## LRU Cache Example
