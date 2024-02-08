@@ -3,6 +3,12 @@
 ```bash
 go get github.com/Ayman161803/inmemocache
 ```
+
+# Features
+- Provides inbuilt standard cache policies - LRU, FIFO, LIFO
+- Provides an interface to give customized get/put policies to the cache.
+- Thread safety has been implemented by read and write mutex(Look [here](https://github.com/Ayman161803/inmemocache/blob/80849a9ebdcc2606dd35eaddb78f0e2e3c6ea254/inmemocache.go#L45)). This ensures that Read-Write and Write-Write conflicts are prevented. 
+    
 # Usage
 
 ## LRU Cache Example
