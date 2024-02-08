@@ -124,3 +124,43 @@ func main() {
 }
 ```
 
+## Custum Get/Put Policy
+The example policy below always returns "Unga Bunga" for a get and throws an error for a put
+ ```go
+ package main
+
+import (
+	"errors"
+	"fmt"
+
+	. "github.com/Ayman161803/inmemocache"
+)
+
+func CustomGetPolicy[Key comparable, Val any](key Key, cache *Cache[Key, Val]) (any, error) {
+	return "Unga Bunga", nil
+}
+
+func CustomPutPolicy[Key comparable, Val any](key Key, val Val, cache *Cache[Key, Val]) error {
+	return errors.New("I always throw errors")
+}
+
+func main() {
+
+	cache := NewCache(3, CustomGetPolicy[string, string], CustomPutPolicy[string, string])
+
+	// get always returns "Unga Bunga"
+
+	val, err := cache.Get("kk")
+	if err != nil {
+		fmt.Println("Cache miss error: ", err)
+	} else {
+		fmt.Println("Value for key 'kk' is", val)
+	}
+
+	// Put always throws an error
+	err = cache.Put("hello", "hi?")
+	if err != nil {
+		fmt.Println("Cache miss error: ", err)
+	}
+}
+```
