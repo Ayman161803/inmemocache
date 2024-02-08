@@ -1,6 +1,9 @@
 package inmemocache
 
-import "container/list"
+import (
+	"container/list"
+	"sync"
+)
 
 // The EvictionPolicyGet function signatue shows how a custom get policy should behave
 type EvictionPolicyGet[Key comparable, Val any] func(key Key, cache *Cache[Key, Val]) (any, error)
@@ -13,6 +16,8 @@ type CacheEntry[Key comparable, Val any] struct {
 	Key Key
 	Val Val
 }
+
+var rwmu sync.RWMutex
 
 // The Cache has CacheEntries stored in a map and a linkedlist. map has Key type as key and the LinkedList Node reference as value.
 // Linkedlist here is used for easier modification with respect to priority
@@ -37,10 +42,14 @@ func NewCache[Key comparable, Val any](Capacity int, evictionPolicyGet EvictionP
 
 // Wrapper for Cache get policy that exposes the access to cache
 func (cache *Cache[Key, Val]) Get(key Key) (any, error) {
+	rwmu.RLock()
+	defer rwmu.RUnlock()
 	return cache.evictionPolicyGet(key, cache)
 }
 
 // Wrapper for Cache put policy that exposes the write access to cache data
 func (cache *Cache[Key, Val]) Put(key Key, val Val) error {
+	rwmu.Lock()
+	defer rwmu.Unlock()
 	return cache.evictionPolicyPut(key, val, cache)
 }
